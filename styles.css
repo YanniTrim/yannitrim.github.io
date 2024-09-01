@@ -107,10 +107,31 @@ header {
         }
     }
 
-    @media (max-width: 768px) {
+
+    @media (max-width: 1024px) {  /**tablet viewport **/
+        flex-direction: column;
+        align-items: center;
+
+    }
+
+    @media (max-width: 768px) {  /**mobile viewport **/
+        flex-direction: column;
+        align-items: center;
+
         nav {
+            margin-top: 10px;
+            width: 100%;
             ul {
                 display: none;
+                flex-direction: column;
+                text-align: center;
+                width: 100%;
+                a {
+                    width: 100%;
+                }
+                &.active { /** if active currently, determined by script**/
+                    display: flex;
+                }
             }
         }
     }
