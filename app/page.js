@@ -22,7 +22,7 @@ export default function Home() {
       setMessages(newMessages);
       setMessageInput("");
       const res = await fetch(
-        ("https://" + process.env.VERCEL_URL + "/api/route"), 
+        ("./api/route"), 
         {
           method: "POST",
           headers: {
