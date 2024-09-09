@@ -22,7 +22,7 @@ export default function Home() {
       setMessages(newMessages);
       setMessageInput("");
       const res = await fetch(
-        "/api/", 
+        ("https://" + process.env.VERCEL_URL + "/api/route"), 
         {
           method: "POST",
           headers: {
@@ -35,8 +35,9 @@ export default function Home() {
       console.log(data.message)
       setMessages([...newMessages, {role: "system", content: data.message}]);
     } catch (error) {
-      console.error("Error fetching chat completions:", error);
-      setMessages([...messages, {role: "system", content: "Failed to fetch response from OpenAI."}]);
+        console.error("page.js error:", error);
+        console.error("Error fetching chat completions:", error);
+        setMessages([...messages, {role: "system", content: "Failed to fetch response from OpenAI."}]);
     }
   };
 
