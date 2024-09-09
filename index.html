@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yanni Trimikliniotis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="scripts.js"></script>
+    <link rel="shortcut icon" href="assets/favicon2.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <a href="#" class="logo-container">
+            <div class="logo">YT</div>
+            <div class="logo-text">Portfolio Website</div>
+        </a>
+        <nav>
+            <ul id="menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="mailto:yt2575@nyu.edu" class="button">Contact Me!</a></li>
+            </ul>
+            <a href="#" class="mobile-toggle" onclick="toggleMobileMenu();">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
+                  </svg>
+                  
+            </a>
+        </nav>
+    </header>
+    <main>
+        <section id="home" class="hero container">
+            <div class="hero-blue">
+                <div>
+                    <h1><small>Hi I'm</small>
+                        Yanni Trimikliniotis
+                    </h1>
+                    <p>
+                        A junior at New York University double majoring in Computer
+                        Science and History with Honors. I work as both a Computer Science Instructor teaching students 
+                        about HTML, CSS, JavaScript, Java, and Python and as a Supplemental Instructor for Calculus at NYU.
+                        <span>I'm interested in Software Engineering, Game Design, and Data Analysis.
+                            At the same time, I love history, economics, and writing which explains my choice in a second major.
+                        </span>
+                    </p>
+                    <div class="call-to-action">
+                        <a href="./assets/YanniTrimikliniotisResume.pdf" class="button black">View Resume</a>
+                        <a href="mailto:yt2575@nyu.edu" class="button white">Contact Me</a>
+                    </div>
+                    <div class="social-links">
+                        <a href="https://github.com/YanniTrim">
+                            <img src="assets/github.png" alt="GitHub" width="48">
+                        </a>
+                        <a href="https://www.linkedin.com/in/yanni-trimikliniotis-05343b256/">
+                            <img src="assets/linkedin.png" alt="Linkedin" width="48">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-yellow">
+                <img src="assets/headshot.jpg" alt="Yanni Trimikliniotis" width="100%">
+            </div>
+        </section>
+        <section class="logos container">
+            <div class="marquee">
+                <div class="track">
+                    <img src="assets/html.png" alt="HTML" width="128">
+                    <img src="assets/css.png" alt="CSS" width="128">
+                    <img src="assets/javascript.png" alt="JS" width="128">
+                    <img src="assets/react.png" alt="React" width="128">
+                    <img src="assets/181_Java_logo_logos-512.webp" alt="Java" width="128">
+                    <img src="assets/python.png" alt="Python" width="128">
+                    <img src="assets/vscode.png" alt="VS Code" width="128">  
+                    <img src="assets/html.png" alt="HTML" width="128">
+                    <img src="assets/css.png" alt="CSS" width="128">
+                    <img src="assets/javascript.png" alt="JS" width="128">
+                    <img src="assets/react.png" alt="React" width="128">
+                    <img src="assets/181_Java_logo_logos-512.webp" alt="Java" width="128">
+                    <img src="assets/python.png" alt="Python" width="128">
+                    <img src="assets/vscode.png" alt="VS Code" width="128">
+                    <img src="assets/html.png" alt="HTML" width="128">
+                    <img src="assets/css.png" alt="CSS" width="128">
+                    <img src="assets/javascript.png" alt="JS" width="128">
+                    <img src="assets/react.png" alt="React" width="128">
+                    <img src="assets/181_Java_logo_logos-512.webp" alt="Java" width="128">
+                    <img src="assets/python.png" alt="Python" width="128">
+                    <img src="assets/vscode.png" alt="VS Code" width="128">                 
+                </div>
+            </div>
+        </section>
+        <section id="skills" class="skills container">
+            <h2>
+                <small>About Me</small>
+                Skills
+            </h2>
+            <div class="holder-blue">
+                <div class="left-column">
+                    <h3>Frontend</h3>
+                    <ul>
+                        <li>HTML</li>
+                        <li>CSS</li>
+                        <li>JavaScript</li>
+                    </ul>
+                    <h3>Backend</h3>
+                    <ul>
+                        <li>Node.js</li>
+                        <li>Python</li>
+                        <li>Java</li>
+                    </ul>
+                </div>
+                <div class="middle-column">
+                    <h3>Relevant Coursework</h3>
+                    <ul>
+                        <li>Basic Algorithms</li>
+                        <li>Applied Internet Technology</li>
+                        <li>Computer Systems Organization</li>
+                        <li>Data Structures</li>
+                    </ul>
+                </div>
+                <div class="right-column">
+                    <h3>A bit about me</h3>
+                    <p>Hi I'm Yanni, a junior at New York University double majoring in Computer
+                        Science and History with Honors. I work as both a Computer Science Instructor teaching students 
+                        about HTML, CSS, JavaScript, Java, and Python and as a Supplemental Instructor for Calculus at NYU.
+                        I'm interested in Software Engineering, Game Design, and Data Analysis.
+                         At the same time, I love history, economics, and writing which explains my choice in a second major.</p>
+                    <p>I'm currently working on a project that uses the Spotify and OpenAI APIs to create custom images to act as playlist covers, based on the songs 
+                        in the playlist.</p>
+                </div>
+            </div>
+        </section>
+        <section class="work-experience container">
+            <h2>
+                <small>Recent</small>
+                Work Experience
+            </h2>
+            <div class="jobs">
+                <article>
+                    <figure>
+                        <div>
+                            <img src="assets/ulc.jpg" alt="NYU University Learning Center" width="100%">
+                            <figcaption>NYU University Learning Center</figcaption>
+                        </div>
+                    </figure>
+                    <h3>Supplemental Instructor</h3>
+                    <div>Aug 2024-Present</div>
+                    <ul>
+                        <li>Conduct and lead 3 weekly Supplemental Instruction sessions a week for Calculus 1</li>
+                        <li>Prepare weekly Supplemental Instruction session material and handouts</li>
+                        <li>Facilitates interactive learning activities that integrate metacognition practices with Calculus course content</li>
+                        <li>Mantain 4-8 hours of drop-in tutoring per week for Calculus, Computer Science, Economics, and Writing</li>
+                    </ul>
+                </article>
+                <article>
+                    <figure>
+                        <div>
+                            <img src="assets/juni.png" alt="Juni Learning" width="100%">
+                            <figcaption>Juni Learning</figcaption>
+                        </div>
+                    </figure>
+                    <h3>Computer Science Insturctor</h3>
+                    <div>May 2024-Present</div>
+                    <ul>
+                        <li>Teach grade-school students various computer languages: Python, Java, JavaScript, HTML, and CSS</li>
+                        <li>Explain various data strcutures and algorithms such as lists, binary search trees, and sorting algorithms</li>
+                        <li>Review programmming projects and test bugs to ensutre that the student assignments are corrected modularly</li>
+                    </ul>
+                </article>
+                <article>
+                    <figure>
+                        <div>
+                            <img src="assets/NYU-Tandon.jpg" alt="Tandon" width="100%">
+                            <figcaption>NYU Tandon School of Engineering</figcaption>
+                        </div>
+                    </figure>                   
+                    <h3>Teaching Assistant</h3>
+                    <div>July 2024-Sept 2024</div>
+                    <ul>
+                        <li>Lead recitation sections to teach and review material with students based on prepared worksheets</li>
+                        <li>Grade assignments and exams and provide feedback to students based on their performance with content</li>
+                        <li>Mantain class by answering questions while professor lectured and organizing class structure with professor</li>
+                    </ul>
+                </article>
+                
+            </div>
+        </section>
+        <section id="projects" class="bento container">
+            <h2>
+                <small>Major</small>
+                Projects
+            </h2>
+            <div class="bento-grid">
+                <div class="bento-item">
+                    <h3>Spotify Enhancer Project</h3>
+                    <h4>Currently Working On</h4>
+                    <p class="languages">React, NodeJS</p>
+                    <p class="desc">Web app where users can import a Spotify playlist and get a playlist cover image made specifcally for that playlist.
+                        The cover is generated by DALLE in the OpenAI API using the genres, tags, and moods associated with each song in
+                        the playlist. This allows the generated cover to be custom-made for that specific playlist. 
+                    </p>
+                    <div class="project-buttons">
+                        <a href="#">
+                            <img src="assets/github.png" alt="GitHub" width="48">
+                        </a>
+                    </div>
+                </div>
+                <div class="bento-item">
+                    <h3>Matrix Calculator</h3>
+                    <h4>November 2023</h4>
+                    <p class="languages">Java</p>
+                    <p class="desc">Program that can take up to two matrices and performs operations on them.
+                        Any single matrix can be transposed, inverted and solved as a system of equations.
+                        Two matrices can be added, subtracted, and multiplied.
+                    </p>
+                    <div class="project-buttons">
+                        <a href="https://github.com/YanniTrim/MatrixCalculator">
+                            <img src="assets/github.png" alt="GitHub" width="48">
+                        </a>
+                    </div>
+                </div>
+                <div class="bento-item">
+                    <h3 class="smaller">Convolutional Quantum Monte Carlo</h3>
+                    <h4>April 2024</h4>
+                    <p class="languages">Python - Qiskit</p>
+                    <p class="desc">A submission for the Yale Quantum Hackathon for The Hartford / Capgemini / Quantinuum challenge. 
+                        We were given a basic Quantum Monte Carlo circuit to optimize. We developed two solutions, the first being pruning / quantum knitting and the second solution we designed using convolutions, which scaled the qubits by quantum adders instead of a large PDF encoding circuit.</p>
+                    <div class="project-buttons">
+                        <a href="https://github.com/VSandwar74/streamlit">
+                            <img src="assets/github.png" alt="GitHub" width="48">
+                        </a>
+                    </div>
+                </div>
+                <div class="bento-item">
+                    <h3>This Website!</h3>
+                    <h4>August 2024</h4>
+                    <p class="languages">HTML, CSS, JS</p>
+                    <div class="project-buttons">
+                        <a href="https://github.com/YanniTrim/yannitrim.github.io">
+                            <img src="assets/github.png" alt="GitHub" width="48">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
