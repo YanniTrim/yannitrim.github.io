@@ -36,6 +36,7 @@ export async function POST(req) {
             message: result.choices[0].message.content,
         });
     } catch (error) {
+        console.error("route.js error:", error);
         console.error("Error fetching chat completions:", error);
         return NextResponse.json({
             error: "Failed to fetch response from OpenAI.",
