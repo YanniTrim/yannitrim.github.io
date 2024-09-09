@@ -6,40 +6,40 @@ export default function Home() {
 
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const [messageInput, setMessageInput] = useState("");
+//   const [messageInput, setMessageInput] = useState("");
 
-  const [messages, setMessages] = useState([
-    {
-      "role": "system",
-      "content": "Hello, how can I help you today?"
-    }
-  ]);
+//   const [messages, setMessages] = useState([
+//     {
+//       "role": "system",
+//       "content": "Hello, how can I help you today?"
+//     }
+//   ]);
 
-  const submitForm = async (e) => {
-    try {
-      e.preventDefault();
-      let newMessages = [...messages, {role: "user", content: messageInput}];
-      setMessages(newMessages);
-      setMessageInput("");
-      const res = await fetch(
-        ("./api/route"), 
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({messages: newMessages}),
-        }
-      )
-      const data = await res.json();
-      console.log(data.message)
-      setMessages([...newMessages, {role: "system", content: data.message}]);
-    } catch (error) {
-        console.error("page.js error:", error);
-        console.error("Error fetching chat completions:", error);
-        setMessages([...messages, {role: "system", content: "Failed to fetch response from OpenAI."}]);
-    }
-  };
+//   const submitForm = async (e) => {
+//     try {
+//       e.preventDefault();
+//       let newMessages = [...messages, {role: "user", content: messageInput}];
+//       setMessages(newMessages);
+//       setMessageInput("");
+//       const res = await fetch(
+//         ("./api/route"), 
+//         {
+//           method: "POST",
+//           headers: {
+//             "Content-Type": "application/json"
+//           },
+//           body: JSON.stringify({messages: newMessages}),
+//         }
+//       )
+//       const data = await res.json();
+//       console.log(data.message)
+//       setMessages([...newMessages, {role: "system", content: data.message}]);
+//     } catch (error) {
+//         console.error("page.js error:", error);
+//         console.error("Error fetching chat completions:", error);
+//         setMessages([...messages, {role: "system", content: "Failed to fetch response from OpenAI."}]);
+//     }
+//   };
 
   const toggleMobileMenu = () => {
     setMenuOpen(!menuOpen);
@@ -281,7 +281,7 @@ export default function Home() {
                   </div>
               </div>
           </section>
-          <section className="chatbot container">
+          {/* <section className="chatbot container">
               <h2>
                   <small>Talk to me</small>
                   Chatbot
@@ -316,7 +316,7 @@ export default function Home() {
                       </form>
                   </div>
               </div>
-          </section>
+          </section> */}
       </main>
     </>
   );
