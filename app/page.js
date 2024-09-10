@@ -217,7 +217,7 @@ export default function Home() {
                       <ul>
                           <li>Lead recitation sections to teach and review material with students based on prepared worksheets</li>
                           <li>Grade assignments and exams and provide feedback to students based on their performance with content</li>
-                          <li>Mantain className by answering questions while professor lectured and organizing className structure with professor</li>
+                          <li>Mantain class by answering questions while professor lectured and organizing class structure with professor</li>
                       </ul>
                   </article>
                   
