@@ -1,10 +1,11 @@
 import { AzureOpenAI } from "openai";
 import { NextResponse } from "next/server";
 
-const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
+const endpoint = process.env.NEXT_PUBLIC_AZURE_OPENAI_ENDPOINT;
+console.log(endpoint);
 const apiKey = process.env.AZURE_OPENAI_API_KEY;
-const deployment = process.env.AZURE_OPENAI_MODEL;
-const apiVersion = process.env.AZURE_OPENAI_APIVERSION;
+const deployment = process.env.NEXT_PUBLIC_AZURE_OPENAI_MODEL;
+const apiVersion = process.env.NEXT_PUBLIC_AZURE_OPENAI_APIVERSION;
 
 export async function POST(req) {
     try {
