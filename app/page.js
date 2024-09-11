@@ -22,7 +22,7 @@ export default function Home() {
       setMessages(newMessages);
       setMessageInput("");
       const res = await fetch(
-        ("/api/"), 
+        ("https://yannitrim-github-7h25owr2i-yannitrims-projects.vercel.app/api/"), 
         {
           method: "POST",
           headers: {
