@@ -22,7 +22,7 @@ export default function Home() {
       setMessages(newMessages);
       setMessageInput("");
       const res = await fetch(
-        ("./api/route"), 
+        ("/api/"), 
         {
           method: "POST",
           headers: {
@@ -32,7 +32,7 @@ export default function Home() {
         }
       )
       const data = await res.json();
-      console.log(data.message)
+      console.log(data)
       setMessages([...newMessages, {role: "system", content: data.message}]);
     } catch (error) {
         console.error("page.js error:", error);
