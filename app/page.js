@@ -105,25 +105,34 @@ export default function Home() {
                   <div className="track">
                       <img src="assets/html.png" alt="HTML" width="128"/>
                       <img src="assets/css.png" alt="CSS" width="128"/>
+                      <img src="assets/sass.png" alt="SaSS" width="128" />
                       <img src="assets/javascript.png" alt="JS" width="128"/>
                       <img src="assets/react.png" alt="React" width="128"/>
                       <img src="assets/181_Java_logo_logos-512.webp" alt="Java" width="128"/>
                       <img src="assets/python.png" alt="Python" width="128"/>
+                      <img src="assets/nextjs.png" alt="Next.js" width="128" />
+                      <img src="assets/azure.png" alt="Azure" width="128" />
                       <img src="assets/vscode.png" alt="VS Code" width="128"/>  
                       <img src="assets/html.png" alt="HTML" width="128"/>
                       <img src="assets/css.png" alt="CSS" width="128"/>
+                      <img src="assets/sass.png" alt="SaSS" width="128" />
                       <img src="assets/javascript.png" alt="JS" width="128"/>
                       <img src="assets/react.png" alt="React" width="128"/>
                       <img src="assets/181_Java_logo_logos-512.webp" alt="Java" width="128"/>
                       <img src="assets/python.png" alt="Python" width="128"/>
+                      <img src="assets/nextjs.png" alt="Next.js" width="128" />
+                      <img src="assets/azure.png" alt="Azure" width="128" />
                       <img src="assets/vscode.png" alt="VS Code" width="128"/>
                       <img src="assets/html.png" alt="HTML" width="128"/>
                       <img src="assets/css.png" alt="CSS" width="128"/>
+                      <img src="assets/sass.png" alt="SaSS" width="128" />
                       <img src="assets/javascript.png" alt="JS" width="128"/>
                       <img src="assets/react.png" alt="React" width="128"/>
                       <img src="assets/181_Java_logo_logos-512.webp" alt="Java" width="128"/>
                       <img src="assets/python.png" alt="Python" width="128"/>
-                      <img src="assets/vscode.png" alt="VS Code" width="128"/>                 
+                      <img src="assets/nextjs.png" alt="Next.js" width="128" />
+                      <img src="assets/azure.png" alt="Azure" width="128" />
+                      <img src="assets/vscode.png" alt="VS Code" width="128"/> 
                   </div>
               </div>
           </section>
@@ -138,13 +147,23 @@ export default function Home() {
                       <ul>
                           <li>HTML</li>
                           <li>CSS</li>
+                          <li>SaSS</li>
                           <li>JavaScript</li>
                       </ul>
                       <h3>Backend</h3>
                       <ul>
                           <li>Node.js</li>
+                          <li>Express</li>
                           <li>Python</li>
                           <li>Java</li>
+                          <li>SQL</li>
+                      </ul>
+                      <h3>Tools</h3>
+                      <ul>
+                        <li>Azure</li>
+                        <li>Figma</li>
+                        <li>Git</li>
+                        <li>MongoDB</li>
                       </ul>
                   </div>
                   <div className="middle-column">
@@ -187,7 +206,7 @@ export default function Home() {
                           <li>Conduct and lead 3 weekly Supplemental Instruction sessions a week for Calculus 1</li>
                           <li>Prepare weekly Supplemental Instruction session material and handouts</li>
                           <li>Facilitates interactive learning activities that integrate metacognition practices with Calculus course content</li>
-                          <li>Mantain 4-8 hours of drop-in tutoring per week for Calculus, Computer Science, Economics, and Writing</li>
+                          <li>Maintain 4-8 hours of weekly drop-in tutoringfor over 15 courses in Calculus, Computer Science, Economics, and Writing</li>
                       </ul>
                   </article>
                   <article>
@@ -198,11 +217,12 @@ export default function Home() {
                           </div>
                       </figure>
                       <h3>Computer Science Insturctor</h3>
-                      <div>May 2024-Present</div>
+                      <div>May 2024-October 2024</div>
                       <ul>
-                          <li>Teach grade-school students various computer languages: Python, Java, JavaScript, HTML, and CSS</li>
-                          <li>Explain various data strcutures and algorithms such as lists, binary search trees, and sorting algorithms</li>
-                          <li>Review programmming projects and test bugs to ensutre that the student assignments are corrected modularly</li>
+                          <li>Taught middle-school and high-school students 5 different computer languages: Python, Java, JavaScript, HTML, and CSS</li>
+                          <li>Explained various data strcutures and algorithms such as lists, binary search trees, and sorting algorithms</li>
+                          <li>Developed and delivered engaging lessons, reviewed programming projects, and tested for bugs to ensure assignments were 
+                          completed correctly and modularly </li>
                       </ul>
                   </article>
                   <article>
@@ -215,9 +235,9 @@ export default function Home() {
                       <h3>Teaching Assistant</h3>
                       <div>July 2024-Sept 2024</div>
                       <ul>
-                          <li>Lead recitation sections to teach and review material with students based on prepared worksheets</li>
-                          <li>Grade assignments and exams and provide feedback to students based on their performance with content</li>
-                          <li>Mantain class by answering questions while professor lectured and organizing class structure with professor</li>
+                          <li>Led recitation sections to teach and review material with over 30 students based on prepared worksheets</li>
+                          <li>Graded assignments and exams and provide feedback to students based on their performance with content</li>
+                          <li>Maintained class by answering questions while professor lectured and organizing class structure with professor</li>
                       </ul>
                   </article>
                   
@@ -272,7 +292,7 @@ export default function Home() {
                   <div className="bento-item">
                       <h3>This Website!</h3>
                       <h4>August 2024</h4>
-                      <p className="languages">HTML, CSS, JS</p>
+                      <p className="languages">React, Next.js, HTML/CSS, JS</p>
                       <div className="project-buttons">
                           <a href="https://github.com/YanniTrim/yannitrim.github.io">
                               <img src="assets/github.png" alt="GitHub" width="48"/>
