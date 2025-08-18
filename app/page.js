@@ -41,7 +41,7 @@ export default function Home() {
                       </h1>
                       <p>
                           A senior at New York University double majoring in Computer
-                          Science and History with Honors. I work as a Supplemental Instructor at NYU where I tutor Computer Science and Calculus to other students.
+                          Science and History with Honors. This past summer I was a Software Engineering Intern at Barclays, and I currently work as a Supplemental Instructor at NYU where I tutor Computer Science and Calculus to other students.
                           <span> I'm interested in Software Engineering, Game Design, and Data Analysis.
                               At the same time, I love history, philosophy, and writing which explains my choice in a second major.
                           </span>
@@ -150,7 +150,7 @@ export default function Home() {
                   <div className="right-column">
                       <h3>A bit about me</h3>
                       <p>Hi I'm Yanni, a senior at New York University double majoring in Computer
-                          Science and History with Honors. I work as a Supplemental Instructor for Calculus at NYU. 
+                          Science and History with Honors. This past summer I was a Software Engineering Intern at Barclays, and I currently work as a Supplemental Instructor for Calculus at NYU. 
                           I'm interested in Software Engineering, Game Design, and Data Analysis.
                           At the same time, I love history, philosophy, and writing which explains my choice in a second major.</p>
                       <p>I have worked on fullstack applications, mainly utilizing the MERN stack as seen in my Workout Tracker which I am continuing to add to overtime.
