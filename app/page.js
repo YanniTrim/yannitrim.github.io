@@ -138,13 +138,13 @@ export default function Home() {
                   <div className="middle-column">
                       <h3>Relevant Coursework</h3>
                       <ul>
-                        {/* <li>Computer Grahics (Graduate Level)</li>
-                        <li>Algorithmic Problem Solving</li> */}
-                          <li>Basic Algorithms</li>
-                          <li>Applied Internet Technology</li>
-                          <li>Computer Systems Organization</li>
-                          <li>Data Structures</li>
-                          <li>Discrete Math</li>
+                            <li>Graduate Computer Graphics</li>
+                            <li>Algorithmic Problem Solving</li>
+                            <li>Basic Algorithms</li>
+                            <li>Applied Internet Technology</li>
+                            <li>Computer Systems Organization</li>
+                            <li>Data Structures</li>
+                            <li>Discrete Math</li>
                       </ul>
                   </div>
                   <div className="right-column">
@@ -178,6 +178,7 @@ export default function Home() {
                             <li>Automated organizational processes in JavaScript for the Data Governance documentation by leveraging content analysis through natural language processing, Confluence API navigation, rate limit handling, and fuzzy-string matching</li>
                             <li>Identified faults in data flows and records storage, which could cause financial and legal risks</li>
                             <li>Designed record retention solutions closing legal risks and, upon implementation, reducing SMS record costs by 50%</li>
+                            <li><strong>Accomplishment</strong> – Won “Best Demo” at intern hackathon and “Best Presenter” for final presentation to Managing Directors</li>
                         </ul>
                     </article>
                   <article>
