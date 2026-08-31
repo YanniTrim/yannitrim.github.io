@@ -6,8 +6,9 @@ export default function Home() {
 
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const toggleMobileMenu = () => {
-    setMenuOpen(!menuOpen);
+  const toggleMobileMenu = (event) => {
+    console.log("toggleMobileMenu called");
+    setMenuOpen(prev => !prev);     
   }
 
   return (
@@ -22,14 +23,13 @@ export default function Home() {
                 <li><a href="#home">Home</a></li>
                 <li><a href="#skills">Skills</a></li>
                 <li><a href="#projects">Projects</a></li>
-                <li><a href="mailto:yt2575@nyu.edu" className="button">Contact Me!</a></li>
+                <li><a href="mailto:yannitrim@gmail.com" className="button">Contact Me!</a></li>
             </ul>
-            <a href="#" className="mobile-toggle" onClick={toggleMobileMenu}>
+            <button type="button" className="mobile-toggle" onClick={toggleMobileMenu} aria-label="Toggle Menu">
                 <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
                   </svg>
-                  
-            </a>
+            </button>
         </nav>
       </header>
       <main>
@@ -39,15 +39,13 @@ export default function Home() {
                       <h1><small>Hi I'm</small>
                           Yanni Trimikliniotis
                       </h1>
-                      <p>
-                          A senior at New York University double majoring in Computer
-                          Science and History with Honors. This past summer I was a Software Engineering Intern at Barclays, and I currently work as a Supplemental Instructor at NYU where I tutor Computer Science and Calculus to other students.
-                          <span> I'm interested in Software Engineering, Game Design, and Data Analysis.
-                              At the same time, I love history, philosophy, and writing which explains my choice in a second major.
-                          </span>
+                      <p> A New York University alum with a Bachelors in Computer Science and History with Honors. 
+                          I am currently a Software Engineer at Barclays working in Specialized Infrastructure for Markets Pre Trade. 
+                          I have worked a Supplemental Instructor and Tutor for Computer Science, Calculus, and Economics courses at NYU.
+                          I'm interested in software engineering, game design, history, and writing so I am always interested in chatting about any of those topics!
                       </p>
                       <div className="call-to-action">
-                          <a href="./assets/YanniTrimikliniotisResume.pdf" className="button black">View Resume</a>
+                          <a href="./assets/YanniTrimikliniotisResume2026.pdf" className="button black">View Resume</a>
                           <a href="mailto:yannitrim@gmail.com" className="button white">Contact Me</a>
                       </div>
                       <div className="social-links">
@@ -114,14 +112,14 @@ export default function Home() {
                       <ul>
                             <li>HTML</li>
                             <li>CSS</li>
-                            <li>SaSS</li>
                             <li>React</li>
                             <li>JavaScript</li>
+                            <li>WebGL</li>
                       </ul>
                       <h3>Backend</h3>
                       <ul>
                           <li>Node.js</li>
-                          <li>Express</li>
+                          <li>C</li>
                           <li>Python</li>
                           <li>Java</li>
                           <li>SQL</li>
@@ -154,7 +152,8 @@ export default function Home() {
                           I'm interested in Software Engineering, Game Design, and Data Analysis.
                           At the same time, I love history, philosophy, and writing which explains my choice in a second major.</p>
                       <p>I have worked on fullstack applications, mainly utilizing the MERN stack as seen in my Workout Tracker which I am continuing to add to overtime.
-                        I am also working on a History thesis for my honors program where I am investigating the leveraging of nationalism and nation-building in authoritarian regimes and the subsequent tension that is found in imperial ambitions.
+                        I also have loved learning Computer Graphics working with OpenGL and WebGL and have a few projects in that area including a (primitive) recreation of the Mario64 menu screen!
+                        Earlier this year I also finished a History thesis for my honors program where I investigated the leveraging of nationalism and nation-building in authoritarian regimes and the subsequent tensions over autonomy.
                       </p>
                   </div>
               </div>
@@ -189,12 +188,12 @@ export default function Home() {
                           </div>
                       </figure>
                       <h3>Supplemental Instructor</h3>
-                      <div>Aug 2024-Present</div>
+                      <div>Aug 2024-May 2026</div>
                       <ul>
-                          <li>Conduct and lead 3 weekly Supplemental Instruction sessions a week for Calculus 1</li>
-                          <li>Prepare weekly Supplemental Instruction session material and handouts</li>
-                          <li>Facilitates interactive learning activities that integrate metacognition practices with Calculus course content</li>
-                          <li>Maintain 4-8 hours of weekly drop-in tutoringfor over 15 courses in Calculus, Computer Science, Economics, and Writing</li>
+                          <li>Conducted and lead 3 weekly Supplemental Instruction sessions a week for Calculus 1</li>
+                          <li>Prepared weekly Supplemental Instruction session material and handouts</li>
+                          <li>Facilitated interactive learning activities that integrate metacognition practices with Calculus course content</li>
+                          <li>Maintained 4-8 hours of weekly drop-in tutoringfor over 15 courses in Calculus, Computer Science, Economics, and Writing</li>
                       </ul>
                   </article>
                   <article>
