@@ -2,6 +2,7 @@ import './styles.scss';
 import { Open_Sans } from 'next/font/google';
 
 
+
 export const metadata = {
   title: "Website Portfolio",
   description: "Portfolio web design",

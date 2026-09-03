@@ -3,11 +3,12 @@ import { useState } from "react";
 // import Image from "next/image";
 
 export default function Home() {
+console.log("Home component rendered");
 
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const toggleMobileMenu = (event) => {
-    console.log("toggleMobileMenu called");
+  const toggleMobileMenu = () => {
+    //console.log("toggleMobileMenu called");
     setMenuOpen(prev => !prev);     
   }
 
@@ -19,20 +20,22 @@ export default function Home() {
             <div className="logo-text">Portfolio Website</div>
         </a>
         <nav>
+            <button className="mobile-toggle" onClick={toggleMobileMenu} aria-label="Toggle Menu" aria-expanded={menuOpen}  aria-controls="menu">
+                <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" strokeLinecap="round" strokeWidth="2" d="M5 7h14M5 12h14M5 17h14"/>
+                  </svg>
+            </button>
             <ul id="menu" className={menuOpen ? "active":""}>
                 <li><a href="#home">Home</a></li>
                 <li><a href="#skills">Skills</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="mailto:yannitrim@gmail.com" className="button">Contact Me!</a></li>
             </ul>
-            <button type="button" className="mobile-toggle" onClick={toggleMobileMenu} aria-label="Toggle Menu">
-                <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14"/>
-                  </svg>
-            </button>
+
         </nav>
       </header>
       <main>
+
           <section id="home" className="hero container">
               <div className="hero-blue">
                   <div>

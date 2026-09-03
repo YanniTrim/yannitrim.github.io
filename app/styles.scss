@@ -38,6 +38,7 @@ a {
 
 
 header {
+    position: relative;
   padding-top: 10px;
   padding-bottom: 10px;
   display: flex;
@@ -103,7 +104,8 @@ header {
         background-color: transparent;
         border: none;
         cursor: pointer;
-        z-index: 1000;
+        z-index: 10;
+        
 
       @media (max-width: 768px) {
           display: inline-block;
