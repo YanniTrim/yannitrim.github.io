@@ -1,0 +1,372 @@
+<body bgcolor=black>
+<center><canvas id=canvas width=800 height=800></canvas>
+<script src=webgl.js></script>
+<script>
+
+/**********************************
+
+Sphere         x*x + y*y + z*z - 1 <= 0
+
+Paraboloid X   x + y*y + z*z <= 0
+Paraboloid Y   x*x + y + z*z <= 0
+Paraboloid Z   x*x + y*y + z <= 0
+
+Slab X         x*x - 1 <= 0
+Slab Y         y*y - 1 <= 0
+Slab Z         z*z - 1 <= 0
+
+Tube X         y*y + z*z - 1 <= 0
+Tube Y         x*x + z*z - 1 <= 0
+Tube Z         x*x + y*y - 1 <= 0
+
+All space      -1 <= 0
+
+**********************************/
+
+function Scene() {
+
+let shapeNum = 10;
+let colorNum = shapeNum;
+let lightNum = 2;
+
+this.vertexShader = `\
+#version 300 es
+in  vec3 aPos;
+out vec3 vPos;
+void main() {
+   gl_Position = vec4(aPos, 1.);
+   vPos = aPos;
+}`;
+
+this.fragmentShader = `\
+#version 300 es
+precision highp float;
+uniform float uTime;
+uniform vec3 uViewPoint;
+uniform mat4 uQ[3*${shapeNum}];
+uniform vec3 uAmbient[${colorNum}], uDiffuse[${colorNum}];
+uniform vec4 uSpecular[${colorNum}];
+uniform vec3 uLight[${lightNum}], uLightColor[${lightNum}];
+
+in  vec3 vPos;
+out vec4 fragColor;
+
+vec3 rayEq(vec3 V, vec3 W, mat4 Q) {
+
+   float A = Q[0].x, B = Q[1].x+Q[0].y, C = Q[2].x+Q[0].z, D = Q[3].x+Q[0].w,
+                     E = Q[1].y       , F = Q[2].y+Q[1].z, G = Q[3].y+Q[1].w,
+                                        H = Q[2].z       , I = Q[3].z+Q[2].w,
+                                                           J = Q[3].w       ;
+
+   float a = A * W.x * W.x +
+             B * W.x * W.y +
+             C * W.z * W.x +
+             E * W.y * W.y +
+             F * W.y * W.z +
+             H * W.z * W.z ;
+
+   float b = 2. * A * V.x * W.x +
+                  B * (W.x * V.y + V.y * W.x) +
+                  C * (V.z * W.x + V.x * W.z) +
+                  D * W.x +
+             2. * E * V.y * W.y +
+                  F * (V.y * W.z + V.z * W.y) +
+                  G * W.y +
+             2. * H * V.z * W.z +
+                  I * W.z;
+
+   float c = A * V.x * V.x +
+             B * V.x * V.y +
+             C * V.z * V.x +
+             D * V.x       +
+             E * V.y * V.y +
+             F * V.y * V.z +
+             G * V.y       +
+             H * V.z * V.z +
+             I * V.z       +
+             J;
+
+   return vec3(a,b,c);
+}
+
+vec3 normalQ(mat4 Q, vec3 P) {
+
+   float A = Q[0].x, B = Q[1].x+Q[0].y, C = Q[2].x+Q[0].z, D = Q[3].x+Q[0].w,
+                     E = Q[1].y       , F = Q[2].y+Q[1].z, G = Q[3].y+Q[1].w,
+                                        H = Q[2].z       , I = Q[3].z+Q[2].w,
+                                                           J = Q[3].w       ;
+
+   return normalize(vec3(2. * A * P.x + C * P.z + B * P.y + D,
+                         2. * E * P.y + F * P.z + B * P.x + G,
+                         2. * H * P.z + F * P.y + C * P.x + I));
+}
+
+vec2 findRoots(vec3 eq) {
+   float a = eq.x, b = eq.y, c = eq.z;
+   vec2 t = vec2(-1.);
+   float discr = b * b - 4. * a * c;
+   if (discr >= 0.)
+      t = vec2(-b - sqrt(discr), -b + sqrt(discr)) / (2. * a);
+   return t;
+}
+
+vec3 phong(vec3 N, vec3 L, vec3 W,
+           vec3 diffuse, vec4 specular) {
+
+   vec3 shade;
+   if (dot(N,L)>0.) {
+      shade = diffuse * dot(N,L);
+   } else {
+      shade = vec3(0.);
+   }
+
+   vec3 R = 2. * N * dot(N,L) - L;
+   if (-dot(R,W) > 0.) {
+      shade += specular.xyz * pow(-dot(R, W), specular.w);
+   }
+   return shade;
+   
+}
+vec3 shade(mat4 shape, vec3 P, vec3 W,
+                 vec3 ambient,
+                 vec3 diffuse,
+		 vec4 specular) {
+   vec3 N = normalQ(shape, P);
+   vec3 shade = ambient;
+   for (int l = 0 ; l < ${lightNum}; l++)
+      shade += uLightColor[l] * phong(N, uLight[l], W,
+			      diffuse,
+			      specular);
+   return shade;
+}
+
+
+
+
+
+void main() {
+   fragColor = vec4(0.);
+
+   vec3 V = uViewPoint;
+   vec3 W = normalize(vPos-V);
+
+   
+   // vec2 tI = vec2(-1.,1000.);
+   float tBest = 100000.;
+
+   for (int i = 0; i<3*${shapeNum}; i+=3) { //each shape
+      float tEntry = -1.0;
+      float tExit = 100000.;
+      vec3 color = vec3(0.);
+      int s = i/3;
+      for (int j = i; j < i+3; j++) { //each plane
+         vec2 tQ = findRoots(rayEq(V, W, uQ[j]));
+         if (tQ.x > tEntry) {
+            tEntry = tQ.x;
+            
+            vec3 P = (V + (tEntry*W)); //intersection point on sphere
+            color = vec3(shade(uQ[j], P, W, uAmbient[s], uDiffuse[s], uSpecular[s]));
+         }
+         if (tQ.y < tExit) tExit = tQ.y;   
+         
+      }
+      if (tEntry > 0. && tEntry < tBest && tEntry < tExit) {
+         tBest = tEntry;
+         fragColor = vec4(sqrt(color), 1.);  
+      }
+   }
+   
+
+}`;
+
+let mxm = (a,b) => {
+   let m = [];
+   for (let c = 0 ; c < 16 ; c += 4)
+   for (let r = 0 ; r < 4 ; r++)
+      m.push( a[r]*b[c] + a[r+4]*b[c+1] + a[r+8]*b[c+2] + a[r+12]*b[c+3] );
+   return m;
+}
+
+let transpose = m => [ m[0],m[4],m[ 8],m[12],
+                       m[1],m[5],m[ 9],m[13],
+                       m[2],m[6],m[10],m[14],
+                       m[3],m[7],m[11],m[15] ];
+
+let inverse = src => {
+   let dst = [], det = 0, cofactor = (c, r) => {
+      let s = (i, j) => src[c+i & 3 | (r+j & 3) << 2];
+      return (c+r & 1 ? -1 : 1) * ( (s(1,1)*(s(2,2)*s(3,3)-s(3,2)*s(2,3)))
+                                  - (s(2,1)*(s(1,2)*s(3,3)-s(3,2)*s(1,3)))
+                                  + (s(3,1)*(s(1,2)*s(2,3)-s(2,2)*s(1,3))) );
+   }
+   for (let n = 0 ; n < 16 ; n++) dst.push(cofactor(n >> 2, n & 3));
+   for (let n = 0 ; n <  4 ; n++) det += src[n] * dst[n << 2];
+   for (let n = 0 ; n < 16 ; n++) dst[n] /= det;
+   return dst;
+}
+
+let qxm = (Q,M) => {
+   let MI = inverse(M);
+   return mxm(transpose(MI), mxm(Q, MI));
+}
+
+////// NEW FUNCTIONS ////////
+
+let move = (x,y,z) => {
+   return [
+      1,0,0,0,
+      0,1,0,0,
+      0,0,1,0,
+      x,y,z,1
+   ];
+}
+let turnX = rad => {
+   return [1,0,0,0,
+            0, Math.cos(rad), Math.sin(rad), 0,
+            0, -Math.sin(rad), Math.cos(rad), 0,
+            0,0,0,1
+   ];
+} 
+let turnY = rad => {
+   return [Math.cos(rad),0,-Math.sin(rad),0,
+            0, 1, 0, 0,
+            Math.sin(rad), 0,Math.cos(rad), 0,
+            0,0,0,1
+   ];
+} 
+let turnZ = rad => {
+   return [Math.cos(rad), -Math.sin(rad), 0, 0,
+          Math.sin(rad), Math.cos(rad), 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+   ];
+} 
+let scale = s => {
+   return  [s,0,0,0,
+            0,s,0,0,
+            0,0,s,0,
+            0,0,0,1]
+}
+let sphere =  [1,0,0,0,
+               0,1,0,0,
+               0,0,1,0,
+               0,0,0,-1];
+
+let parabX = [
+   0,0,0,1,
+   0,1,0,0,
+   0,0,1,0,
+   0,0,0,0
+];
+let parabY = [
+   1,0,0,0,
+   0,0,0,1,
+   0,0,1,0,
+   0,0,0,0
+];
+let parabZ = [
+   1,0,0,0,
+   0,1,0,0,
+   0,0,0,1,
+   0,0,0,0
+];
+let slabX = [
+   1,0,0,0,
+   0,0,0,0,
+   0,0,0,0,
+   0,0,0,-1
+];
+let slabY = [
+   0,0,0,0,
+   0,1,0,0,
+   0,0,0,0,
+   0,0,0,-1
+];
+let slabZ = [
+   0,0,0,0,
+   0,0,0,0,
+   0,0,1,0,
+   0,0,0,-1
+];
+let tubeX = [
+   0,0,0,0,
+   0,1,0,0,
+   0,0,1,0,
+   0,0,0,-1
+];
+let tubeY = [
+   1,0,0,0,
+   0,0,0,0,
+   0,0,1,0,
+   0,0,0,-1
+];
+let tubeZ = [
+   1,0,0,0,
+   0,1,0,0,
+   0,0,0,0,
+   0,0,0,-1
+];
+let space = [
+   0,0,0,0,
+   0,0,0,0,
+   0,0,0,0,
+   0,0,0,-1
+];
+
+
+let startTime = Date.now()/1000;
+let normalize = v => {
+   let s = Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
+   return [ v[0]/s, v[1]/s, v[2]/s ];
+}
+
+this.update = viewPoint => {
+   let time = Date.now()/1000 - startTime;
+   setUniform('1f', 'uTime', time);
+   setUniform('3fv', 'uViewPoint', viewPoint);
+
+   let m = mxm(turnZ(0),scale(.1));
+   let turn = mxm(mxm(turnY(1*time), (turnX(.3))),turnZ(-.8));
+   let m1 = mxm(turn,m);
+   let m2 = mxm(turn,mxm(move(.1,.1,0),m));
+   let m3 = mxm(turn,mxm(move(-.1,-.1,0),m));
+   let m4 = mxm(turn,mxm(move(.2,.2,0),m));
+   let m5 = mxm(turn,mxm(move(-.2,-.2,0),m));
+   let m6 = mxm(turn,mxm(move(-.3,-.3,0),m));
+   let m7 = mxm(turn,mxm(move(-.4,-.2,0),m));
+   let m8 = mxm(turn,mxm(move(-.2,-.4,0),m));
+   let m9 = mxm(mxm(turn,mxm(move(-.4,-.4,0),m)),scale(.75));
+   let m10 = mxm(mxm(turn,mxm(move(-.5,-.5,0),m)),scale(.75));
+
+   let cube = m => [qxm(slabX,m), qxm(slabY,m), qxm(slabZ,m)].flat();
+   setUniform('Matrix4fv', 'uQ', false,
+      [ cube(m1),cube(m2),cube(m3),cube(m4),cube(m5), cube(m6), cube(m7),cube(m8),cube(m9),cube(m10)
+      ].flat());
+
+      setUniform('3fv', 'uAmbient', [[ 0,.1,.1 ],[ 0,.1,.1 ],[ 0,.1,.1 ],[ 0,.1,.1 ],[ 0,.1,.1 ],[0.,0.,.05],[0.,0.,.05],[0.,0.,.05],[.1,.1,], [.1,.1,]].flat());
+   setUniform('3fv', 'uDiffuse', [[ 0,.90,.93 ],[ 0,.90,.93 ], [ 0,.90,.93 ],[ 0,.90,.93 ], [ 0,.90,.93 ],[0.,.26,.26],[0.,.26,.26],[0.,.26,.26],[.4,.2,.1], [.4,.2,.1]].flat());
+   setUniform('4fv', 'uSpecular', [[ 0,.96,1,10 ], [ 0,.96,1,10 ], [ 0,.96,1,10 ],[ 0,.96,1,10 ], [ 0,.96,1,10 ],[0.,.52,.51,1],[0.,.52,.51,1],[0.,.52,.51,1]].flat());
+
+   setUniform('3fv', 'uLight', [
+      normalize([(-.35),
+                 (.35), .35]),
+      normalize([1,-1,-.5]),
+   ].flat());
+
+   setUniform('3fv', 'uLightColor', [ .8,.8,.8,
+                              .8,.8,.8,
+			    ]);
+}
+
+}
+
+
+
+
+
+
+
+gl_start(canvas, new Scene());
+</script>
+
+

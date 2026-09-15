@@ -1,0 +1,460 @@
+<body bgcolor="black">
+<img src="textures/background.png" style="position:fixed; top:0; left:20%; width:1000px; height:1000px; z-index:-1;"/>
+<center><canvas id="canvas" width="1000" height="1000"></canvas></center>
+<script src="webgl.js"></script>
+<script src="implicit.js"></script>
+<script>
+
+// let coordsElement = document.getElementById("coords");
+// coordsElement.style.color = "white";
+function Scene() {
+
+    this.vertexShader = `#version 300 es
+        uniform mat4 uMF, uMI, uMat[20]; //20 is an upper bound
+        uniform vec3 uBlobColors[20];
+        uniform bool uUseSkinning;
+        uniform vec3 uColor;
+        in  vec3 aPos, aNor, aWts0, aWts1;
+        out vec3 vPos, vNor;
+        out vec3 vColor;
+
+        void main() {
+    
+        vec4 p = uMF * vec4(aPos, 1.);
+        vec4 pos;
+        vec3 color;
+
+        if (uUseSkinning == true) {
+
+            pos = vec4(0.);
+            color = vec3(0.);
+
+            for (int i = 0 ; i < 20 ; i++) {
+                float w0 = 0.0;
+                float w1 = 0.0;
+
+                if (i == int(aWts0.x)) w0 += mod(aWts0.x, 1.);
+                if (i == int(aWts0.y)) w0 += mod(aWts0.y, 1.);
+                if (i == int(aWts0.z)) w0 += mod(aWts0.z, 1.);
+                if (i == int(aWts1.x)) w1 += mod(aWts1.x, 1.);
+                if (i == int(aWts1.y)) w1 += mod(aWts1.y, 1.);
+                if (i == int(aWts1.z)) w1 += mod(aWts1.z, 1.);
+
+                float w = w0 + w1;
+                pos+= w*(uMat[i]*p);
+                color += w* uBlobColors[i];
+            }
+        
+        
+        } else {
+            pos = p;
+            color = uColor;
+        }
+        
+        
+        vec4 nor = vec4(aNor, 0.) * uMI;
+        gl_Position = pos * vec4(1.,1.,-.1,1.); // perspective
+        vPos = pos.xyz;
+        vNor = nor.xyz;
+        vColor = color;
+        }
+    `;
+    this.fragmentShader = Shader.shinyFragmentShader;
+
+    autodraw = false;
+
+    let blobs = new Blobs();
+    let transforms = []; // to keep track of each blob's transformation matrix
+    let colors = []; // to keep track of each blob's color
+
+    let baseSphere = mxm(move(0, .05, 0), scale(.3,.3,.25));
+    transforms.push(baseSphere);
+    colors.push([1,.7,.5]);    
+    let nose = mxm(move(0, -0,.27), scale(.12, .1, .12));
+    transforms.push(nose);
+    colors.push([1,.7,.5]);
+    let earL = mxm(move(-.3,.07,-0.05), scale(.04, .07, .05));
+    transforms.push(earL);
+    colors.push([1,.7,.5]);
+    let earR = mxm(move(.3,.07,-0.05), scale(.04, .07, .05));
+    transforms.push(earR);
+    colors.push([1,.7,.5]);
+    let cheekL = mxm(mxm(move(-.17,-.05,0.07), mxm(turnX(-Math.PI/4), turnZ(-Math.PI/4))),  scale(.14, .1, .15));
+    transforms.push(cheekL);
+    colors.push([1,.7,.5]);
+    let cheekR = mxm(mxm(move(.17,-.05,0.07), mxm(turnX(-Math.PI/4), turnZ(Math.PI/4))), scale(.14, .1, .15));
+    transforms.push(cheekR); 
+    colors.push([1,.7,.5]);
+    let chin = mxm(move(0,-.12,.13), mxm(turnX(-Math.PI/4), scale(.15, .08, .07)));
+    transforms.push(mxm(chin, move(0,-0.06,0)));
+    colors.push([1,.7,.5]);
+    // HAT
+    let hatDome = mxm(move(0, .34, .06), scale(.32, .15, .15));
+    transforms.push(hatDome);
+    colors.push([.9, .01, .01]);    
+    let hatBrim = mxm(move(0, .27, .22), mxm(turnX(-Math.PI/8), scale(.25, .03, .12)));
+    transforms.push(hatBrim);
+    colors.push([.9, .01, .01]);
+    let hatFront = mxm(move(0, .36, .1), mxm(turnX(0), scale(.18, .13, .15)));
+    transforms.push(hatFront);
+    colors.push([.9, .01, .01]);
+    let hatBridge1 = mxm(move(0, .3, -0.02), mxm(turnX(Math.PI / 6), scale(.32, .12, .13)));
+    transforms.push(hatBridge1);
+    colors.push([.9, .01, .01]);
+    let hatBridge2 = mxm(move(0, .23, -.11), mxm(turnX(Math.PI / 6), scale(.32, .13, .13)));
+    transforms.push(hatBridge2);
+    colors.push([.9, .01, .01]);  
+    let hatBack = mxm(move(0, .15, -.25),mxm(turnX(Math.PI /3), scale(.32, .3, .13)));  
+    transforms.push(hatBack);
+    colors.push([.9, .01, .01]);
+
+    //not selectable
+    let moustache1 = mxm(move(-.14,-.08,.22), mxm(mxm(turnZ(-Math.PI/4), turnY(-Math.PI/6)), scale(.06, .04, .02)));
+    transforms.push(moustache1);
+    colors.push([.05,.05,.05]);
+    let moustache2 = mxm(move(.14,-.08,.22), mxm(mxm(turnZ(Math.PI/4), turnY(Math.PI/6)), scale(.06, .04, .02)));
+    transforms.push(moustache2);
+    colors.push([.05,.05,.05]);
+    let moustache3 = mxm(move(-.05,-.12,.25), scale(.06, .05, .02));
+    transforms.push(moustache3);
+    colors.push([.05,.05,.05]);
+    let moustache4 = mxm(move(.05,-.12,.25), scale(.06, .05, .02));
+    transforms.push(moustache4);
+    colors.push([.05,.05,.05]);
+    let eyeL = mxm(move(-.1,.15,.2), scale(.05, .075, .05)); // <-- eye holes
+    transforms.push(eyeL);
+    colors.push([1,1,1]);
+    let eyeR = mxm(move(.1,.15,.2), scale(.05, .075, .05));
+    transforms.push(eyeR);
+    colors.push([1,1,1]);
+
+    blobs.addBlob(blobs.SPHERE, baseSphere, .2);
+    blobs.addBlob(blobs.SPHERE, nose, .3);
+    blobs.addBlob(blobs.SPHERE, earL, 1);
+    blobs.addBlob(blobs.SPHERE, earR, 1);
+    blobs.addBlob(blobs.SPHERE, cheekL, .5);
+    blobs.addBlob(blobs.SPHERE, cheekR, .5);
+    blobs.addBlob(blobs.SPHERE, chin, .5);
+    // HAT
+    blobs.addBlob(blobs.SPHERE, hatDome, .4);
+    blobs.addBlob(blobs.SPHERE, hatFront, .7);
+    blobs.addBlob(blobs.SPHERE, hatBrim, .5);
+    blobs.addBlob(blobs.SPHERE, hatBridge1, .8);
+    blobs.addBlob(blobs.SPHERE, hatBridge2, .8);
+    blobs.addBlob(blobs.SPHERE, hatBack, .5);
+
+    //not selectable
+    blobs.addBlob(blobs.SPHERE, moustache1, 1);
+    blobs.addBlob(blobs.SPHERE, moustache2, .6);
+    blobs.addBlob(blobs.SPHERE, moustache3, .6);
+    blobs.addBlob(blobs.SPHERE, moustache4, 1);
+    blobs.addBlob(blobs.SPHERE, eyeL, -.5);
+    blobs.addBlob(blobs.SPHERE, eyeR, -.5);
+
+    let mesh = {data: implicitSurfaceTriangleMesh(blobs, 150) };
+    let unitSphere = Shape.sphereMesh(10,5);
+
+    leftWhiteEyeBase = mxm(move(-.1,.15,.175), scale(.06, .075, .01));
+    rightWhiteEyeBase = mxm(move(.1,.15,.175), scale(.06, .075, .01));
+    leftOuterEyeBase = mxm(move(-.09,.15,.18), scale(.045, .05, .01));
+    rightOuterEyeBase = mxm(move(.09,.15,.18), scale(.045, .05, .01))
+    leftInnerEyeBase = mxm(move(-.09,.14,.19), scale(.032, .035, .01))
+    rightInnerEyeBase = mxm(move(.09,.14,.19), scale(.032, .035, .01));
+
+    let M = new Matrix();
+
+    let distorts = []; // to keep track of each blob's distortion
+    for (let i = 0; i < blobs.nBlobs(); i++) {
+        distorts.push([0,0,0]);
+    }
+    // !!! order of blobs in the array is the order they are added to the blobs object, so we can use the index to refer to them
+    let blobSelected = 0;
+    let dragStart = null;
+         
+
+    let noseSpring = new Spring();
+    let earLSpring = new Spring();
+    let earRspring = new Spring();
+    let cheekLspring = new Spring();
+    let cheekRspring = new Spring();
+    let chinSpring = new Spring();
+    let hatSpring = new Spring();
+    let springs = [0,noseSpring, earLSpring, earRspring, cheekLspring, cheekRspring, chinSpring, hatSpring];
+    let springActive = [false, false, false, false, false, false, false, false];
+    let springStart = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]];
+
+    mouse.down = () => {
+        if (blobSelected == 0) {
+            
+            let normX = mouse.x-1;
+            let normY = mouse.y;
+            // console.log("normX,normY ",normX,normY);
+            let ray = [normX,normY,1, 1];
+            let dir = [0,0,-1,0];
+
+            for (let i = 1; i<blobs.nBlobs(); i++) { //  current BUG: detection is slightly off 
+                let blobMat = mxm(move(distorts[i]), transforms[i]);
+                if ( i == 6) { //chin
+                    blobMat= mxm(blobMat, scale(3.)); //scale up the nose for better detection
+                }
+                
+                let inverseMat = inverse(blobMat); // put the mouse ray in the same space as the ellipsoid
+              
+                let transformedRay = transform(inverseMat,ray).slice(0,3);
+                let transformedDir = transform(inverseMat,dir).slice(0,3);
+                transformedDir = normalize(transformedDir); // normalize the direction vector
+                // console.log("transformedRay ",transformedRay);
+                // console.log("transformedDir ",transformedDir);
+
+                // check if the ray intersects with the ellipsoid
+            
+                let b = 2*(dot(transformedRay,transformedDir));
+                let c = dot(transformedRay,transformedRay) - 1; //ray trace to unit sphere
+                let discriminant = b*b - 4*c;
+                
+                if (discriminant >= 0) { //ray intersects with the ellipsoid
+                    blobSelected = i;
+                    if (i>=7 && i <=12) { //hat parts
+                        blobSelected = 7;
+                    }
+                    console.log("selected blob ",i);
+
+                    dragStart = {
+                        x: normX,
+                        y: normY,
+                        startDistort: distorts[i].slice() // copy current distort
+                    };
+
+
+                    break;
+                }
+
+            }
+
+        }
+        
+    }
+
+    mouse.drag = (x, y) => {
+        if (blobSelected != 0 && dragStart) {
+
+            let x = mouse.x-1;
+            let y = mouse.y;
+            let dx = x - dragStart.x;
+            let dy = y - dragStart.y;
+            
+            distorts[blobSelected] = [dragStart.startDistort[0] + dx, dragStart.startDistort[1] + dy, dragStart.startDistort[2]]; //shift based on original distortion
+           
+        }
+        
+    }
+    mouse.up = () => {
+        if (blobSelected == 0) return;
+        console.log("blob",blobSelected," final distort ", distorts[blobSelected]);
+        dragStart = null;
+        blobSelected = 0;
+    }
+    
+    let springing = false;
+
+    this.update = () => {
+        let normX = mouse.x-1;
+        let normY = mouse.y;
+        //coordsElement.innerText = `Mouse: (${normX.toFixed(2)}, ${normY.toFixed(2)})`; // test code
+        let time = Date.now() / 1000;
+
+        document.addEventListener("keydown", e => {
+            if (e.key == "e") {
+                //set force to all springs based on distance of distort to original position
+                for (let i = 1; i < springs.length; ++i) {
+                    let d = distorts[i];
+                    let dist = Math.sqrt(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]);
+
+                    if (dist > 0.001) {
+                        springActive[i] = true;
+                        springs[i].setForce(dist);
+                        springs[i].setDamping(.8);
+                        springStart[i] = distorts[i].slice();
+                        
+                    } else {
+                        springActive[i] = false;
+                    } 
+                }
+
+            }
+        });
+
+        if (springActive.includes(true)) {
+            for (let i = 1; i < springs.length; i++) {
+                if (springActive[i]) {
+                
+                    let d = distorts[i]; //curent position of the blob
+                    let dist = Math.sqrt(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]); //distance from original position
+
+                    springs[i].update(0.2); // update the spring
+                    let pos = springs[i].getPosition();
+                    //console.log(" pos ", pos);
+                    let sx = springStart[i][0];
+                    let sy = springStart[i][1];
+                    let sz = springStart[i][2];
+                    let angle = Math.atan(sy/sx);
+                    if (sx < 0) angle += Math.PI;
+                    springs[i].setForce(springs[i].getForce()*0.9);
+
+                    // As t goes from 0 -> 1, distort goes from start -> 0
+                    distorts[i] = [Math.cos(angle) * pos, Math.sin(angle) * pos, sz];
+                    if (springs[i].getForce() <= 0.01) {
+                        distorts[i]     = [0,0,0];
+                        springActive[i] = false;
+                    }
+                }
+            }
+        }
+        
+
+
+
+        let outmat = [];
+        M.push();
+            M.turnY(Math.sin(time)*0.1);
+            // M.turnY(-3*Math.PI/4);
+
+            outmat.push(M.get());
+            M.push();
+                //nose
+                M.move(0,0,0.03);
+                M.move(distorts[1]);
+                outmat.push(M.get());
+            M.pop();
+            M.push();
+                //left ear
+                
+                M.move(distorts[2]);
+                outmat.push(M.get());
+            M.pop();
+            M.push();
+                //right ear
+                M.move(distorts[3]);
+                outmat.push(M.get());
+            M.pop();
+            M.push();
+                //left cheek
+                M.move(distorts[4]);
+                outmat.push(M.get());
+            M.pop();
+            M.push();
+                //right cheek
+                M.move(distorts[5]);
+                outmat.push(M.get());
+            M.pop();
+            M.push();
+                //chin
+                M.move(0,-0.08,0);
+                M.move(distorts[6]);
+                outmat.push(M.get());
+            M.pop();
+            M.push();
+                //hat main
+                //M.move(0,.1,0);
+                M.move(distorts[7]);
+                outmat.push(M.get());
+            M.pop();
+            M.push();
+                //hat brim
+                M.move(distorts[7]);
+                outmat.push(M.get());
+            M.pop();
+            M.push();
+                //hat front
+                M.move(distorts[7]);
+                outmat.push(M.get());
+            M.pop();
+             M.push();
+                //hat bridge
+                M.move(distorts[7]);
+                outmat.push(M.get());
+            M.pop();
+
+            M.push();
+                //hat bridge
+                M.move(distorts[7]);
+                outmat.push(M.get());
+            M.pop();
+            M.push();
+                //hat back
+                M.move(distorts[7]);
+                outmat.push(M.get());
+            M.pop();
+            
+
+            //not selectable
+            M.push();
+                //moustache1
+                outmat.push(M.get());
+            M.pop();
+            M.push();
+                //moustache2
+                outmat.push(M.get());
+            M.pop();
+            M.push();
+                //moustache3
+                outmat.push(M.get())
+            M.pop();
+            M.push();
+                //moustache4
+                outmat.push(M.get());
+            M.pop();
+            //eyes
+            let a = M.get()
+            outmat.push(a);
+            let leftWhiteEye = mxm(a, leftWhiteEyeBase);
+            let leftOuterEye = mxm(a, leftOuterEyeBase);
+            let leftInnerEye = mxm(a, leftInnerEyeBase);
+            let b = M.get()
+            let rightWhiteEye = mxm(b, rightWhiteEyeBase);
+            let rightOuterEye = mxm(b, rightOuterEyeBase);
+            let rightInnerEye = mxm(b, rightInnerEyeBase);
+            outmat.push(b);
+
+        M.pop();
+        
+        // for (let i = 1; i < blobs.nBlobs(); ++i) {
+        //     let blobMat = mxm(move(distorts[i]), transforms[i]);
+        //     drawObj(unitSphere, blobMat, [1, 0, 0]); // red wireframe on each selectable position, just for debugging
+        // }
+        
+        
+
+        setUniform('Matrix4fv', 'uMat', false, outmat.flat()); // send the blobs to the vertex shader in array
+        setUniform('3fv', 'uBlobColors', colors.flat()); // send the colors to the vertex shader in array
+        vertexMap(['aPos',3,'aNor',3,'aWts0',3,'aWts1',3]); // sets every vertex to have 12 points accessible in 4 vec3s
+        setUniform('1i', 'uUseSkinning',  true); // enable skinning
+        drawObj(mesh, mxm(turnY(0), scale(1)));
+
+        setUniform('1i', 'uUseSkinning',  false); // disable skinning
+        vertexMap(['aPos',3,'aNor',3]); // sets every vertex to have 6 points accessible in 2 vec3s
+        // Disable weight attributes and set constant zero
+        const wts0Loc = gl.getAttribLocation(gl.program, 'aWts0');
+        const wts1Loc = gl.getAttribLocation(gl.program, 'aWts1');
+        gl.disableVertexAttribArray(wts0Loc);
+        gl.disableVertexAttribArray(wts1Loc);
+        gl.vertexAttrib3f(wts0Loc, 0, 0, 0);
+        gl.vertexAttrib3f(wts1Loc, 0, 0, 0);
+        drawObj(unitSphere, leftWhiteEye, [1,1,1]);
+        drawObj(unitSphere, rightWhiteEye, [1,1,1]); 
+        drawObj(unitSphere, leftOuterEye, [0,.7,1]); 
+        drawObj(unitSphere, rightOuterEye, [0,.7,1]);
+        drawObj(unitSphere, leftInnerEye, [0,0,0]); 
+        drawObj(unitSphere, rightInnerEye, [0,0,0]);
+
+    }
+
+
+
+
+
+}
+
+gl_start(canvas, new Scene());
+</script>
+</body>
