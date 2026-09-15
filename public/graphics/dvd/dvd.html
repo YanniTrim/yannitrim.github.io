@@ -1,0 +1,175 @@
+<body bgcolor=black>
+<center><canvas style="background:rgb(11, 11, 11)" id=canvas width=1200 height=800></canvas>
+<script src=webgl.js></script>
+<button id="plus">+</button>
+<button id="minus">-</button>
+<script>
+
+let logoNum = 1;
+
+function Scene() {
+
+   this.vertexShader = `#version 300 es
+      uniform mat4 uMF, uMI;
+
+      in  vec3 aPos, aNor;
+      in  vec2 aUV;
+
+      out vec3 vPos, vNor;
+      out vec2 vUV;
+
+      void main() {
+         vec4 pos = uMF * vec4(aPos, 1.);
+         vec4 nor = vec4(aNor, 0.) * uMI;
+         gl_Position = pos * vec4(1.,1.,-.1,1.);
+         vPos = pos.xyz;
+         vNor = nor.xyz;
+         vUV  = aUV;
+      }
+   `;
+   this.fragmentShader = `#version 300 es
+      precision highp float;
+      in  vec3 vPos, vNor;
+      in  vec2 vUV;
+      out vec4 fragColor;
+      uniform vec3 uColor;
+      uniform int uCurrentTexture;
+      uniform sampler2D uSampler[2];
+ 
+
+      void main() {
+         vec3 nor = normalize(vNor);
+         float c = .1 + max(0., dot(vec3( .5),nor))
+                      + max(0., dot(vec3(-.5),nor));
+         vec4 T = texture(uSampler[0], vUV);
+         if (uCurrentTexture == 1) {
+            T = texture(uSampler[1], vUV);
+            T.a = T.a+0.1;
+         }
+
+	 // TRANSPARENT TEXTURE => TRANSPARENT PIXEL
+
+         fragColor = vec4(sqrt(c)*uColor*T.rgb, T.a);
+      }
+   `;
+
+   let createMesh = (nu, nv, p) => {
+      let mesh = [];
+      for (let j = nv ; j > 0 ; j--) {
+         for (let i = 0 ; i <= nu ; i++)
+            mesh.push(p(i/nu,j/nv),p(i/nu,j/nv-1/nv));
+         mesh.push(p(1,j/nv-1/nv),p(0,j/nv-1/nv));
+      }
+      return mesh.flat();
+   }
+
+   let square=(nu=2,nv=2,f)=>createMesh(nu,nv,(u,v)=>{
+      return [ 2*u-1,1-2*v,f?f(u,v):0, 0,0,1, u,v ];
+   });
+
+   mesh = { triangle_strip: true,
+            data: new Float32Array(square()) };
+
+   let isFirstTime = true;
+
+   let lastTime = Date.now()/1000;
+
+   let bounced = false;
+
+   let directions = [];
+   let positions = [];
+   let color = [];
+
+
+   let startDir = n => {
+      return [(.01*s(n+.5)),(.01*c(n)) ]
+   }
+
+   document.getElementById("plus").addEventListener("click", () => {
+      logoNum++;
+      directions.push(startDir(logoNum-1));
+      positions.push([0,0,0]);
+      color.push([1,1,1]);
+   });
+   document.getElementById("minus").addEventListener("click", () => {
+      logoNum--;
+      directions.pop();
+      positions.pop();
+      color.pop();
+   })
+
+   this.update = () => {
+
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA,
+                   gl.ONE_MINUS_SRC_ALPHA);
+
+      if (isFirstTime) {
+         addTexture(0, 'DVD_logo.png');
+         addTexture(1, 'scanlines.png');
+         for (let i = 0; i<logoNum; i++) {
+            directions[i] = startDir(i);
+            positions[i] = [0,0,0];
+            color[i] = [1,1,1];
+         }
+	      isFirstTime = false;
+      }
+
+      let time = Date.now() / 1000;
+      let dt = time - lastTime;
+      lastTime = time;
+      vertexMap(['aPos', 3, 'aNor', 3, 'aUV', 2]);
+      setUniform('1iv', 'uSampler', [0,1]);
+   
+  
+      let P = [];
+      for (let n = 0 ; n < logoNum ; n++) {
+         let a = .01, b = n + .5;
+         positions[n][0] += directions[n][0] * dt *50; //x
+         positions[n][1] += directions[n][1] * dt *50; //y
+
+         if (positions[n][0] > 0.85) {
+            positions[n][0] = 0.85 - (positions[n][0]-0.85);
+            directions[n][0] *=-1; 
+            bounced = true;
+         } else if (positions[n][0] < -0.85) {
+            positions[n][0] = -0.85 - (positions[n][0]+0.85);
+            directions[n][0] *=-1;
+            bounced = true;
+         }
+         if (positions[n][1] > 0.9) {
+            positions[n][1] = 0.9 - (positions[n][1]-0.9);
+            directions[n][1] *=-1;
+            bounced = true;
+         } else if (positions[n][1] < -0.9) {
+            positions[n][1] = -0.9 - (positions[n][1]+0.9);
+            directions[n][1] *=-1;
+            bounced = true;
+         }
+         if (bounced) {
+            color[n] = [s(time+n)*.5+.5, s(2*time+n)*.5+.5, s(3*time+n)*.5+.5];
+            bounced = false;
+         }
+         P.push({n:n, p:positions[n]});
+      }
+      
+
+      // SORT THE OBJECTS FROM BACK TO FRONT
+
+      P.sort((a,b) => a.p[2] - b.p[2]);
+
+      // THEN DISPLAY THEM IN BACK TO FRONT ORDER
+      setUniform('1i', 'uCurrentTexture', 0);
+      for (let i = 0 ; i < P.length ; i++) {
+         let n = P[i].n;
+         drawObj(mesh, mxm(move(P[i].p), scale(.15)), color[i]);
+      }
+      setUniform('1i', 'uCurrentTexture', 1);
+      drawObj(mesh, mxm(move(0,0,.1),scale(.95)));
+   }
+}
+
+gl_start(canvas, new Scene());
+</script>
+
+

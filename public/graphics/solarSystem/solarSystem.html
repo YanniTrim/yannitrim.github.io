@@ -1,0 +1,276 @@
+<body bgcolor=black>
+<center><canvas id=canvas width=800 height=800></canvas>
+<script src=webgl.js></script>
+<script>
+
+// IMPLEMENTING A PROPER MATRIX CLASS
+
+/*
+   By putting an object oriented wrapper around
+   matrix operations, we add the ability to use
+   push() an pop() methods to create local
+   contexts. This will allow us to create
+   hierarchical structures, such as machines
+   with moving parts and creatures with
+   moving limbs.
+*/
+
+function Scene() {
+
+let parametric = (f,nu,nv,other) => {
+   let V = [];
+   for (let j = 0 ; j < nv ; j++) {
+      for (let i = 0 ; i <= nu ; i++) {
+         V.push(f(i/nu,j/nv,other));
+         V.push(f(i/nu,(j+1)/nv,other));
+      }
+      V.push(f(1,(j+1)/nv,other));
+      V.push(f(0,(j+1)/nv,other));
+   }
+   return V.flat();
+}
+
+let tube = n => parametric((u,v) => {
+   let theta = 2 * Math.PI * u;
+   let c = Math.cos(theta);
+   let s = Math.sin(theta);
+   return [c,s,2*v-1, c,s,0];
+},n,2);
+
+let sphere = (nu,nv) => parametric((u,v) => {
+   let theta = 2 * Math.PI * u;
+   let phi = Math.PI * (v - 1/2);
+   let cu = Math.cos(theta);
+   let su = Math.sin(theta);
+   let cv = Math.cos(phi);
+   let sv = Math.sin(phi);
+   let x = cu * cv, y = su * cv, z = sv;
+   return [x,y,z, x,y,z];
+},nu,nv);
+
+let torus = (nu,nv,r) => parametric((u,v,r) => {
+   let theta = 2 * Math.PI * u,
+       cu = Math.cos(theta),
+       su = Math.sin(theta);
+   let phi = 2 * Math.PI * v,
+       cv = Math.cos(phi),
+       sv = Math.sin(phi);
+   return [(1+r*cv)*cu,(1+r*cv)*su,r*sv, cv*cu,cv*su,sv];
+   
+},nu,nv,r);
+
+mesh = {
+  triangle_strip: true,
+  data: new Float32Array(torus(30,6,.1)),
+};
+
+this.vertexShader = `\
+#version 300 es
+` + noiseCode + `
+uniform mat4 uMF, uMI;
+uniform float uTime;
+in  vec3 aPos, aNor;
+out vec3 vPos, vNor, vObjPos;
+void main() {
+   vec4 pos = uMF * vec4(aPos, 1.);
+   vec4 nor = vec4(aNor, 0.) * uMI;
+   gl_Position = pos * vec4(1.,1.,-.1,1.);
+   vPos = pos.xyz;
+   vNor = nor.xyz;
+   vObjPos = aPos;
+}`;
+
+this.fragmentShader = `\
+#version 300 es
+precision highp float;
+uniform vec3 uColor;
+uniform float uTime;
+uniform int uNum;
+in  vec3 vPos, vNor, vObjPos;
+out vec4 fragColor;
+
+
+float turbulence(vec3 P) {
+   float f = 0., s = 1.;
+   for (int i = 0 ; i < 9 ; i++) {
+      f += abs(noise(s * P)) / s;
+      s *= 2.;
+      P = vec3(.866*P.x + .5*P.z, P.y + 100., -.5*P.x + .866*P.z);
+   }
+   return f;
+}
+
+vec3 dirt(vec3 pos) {
+    vec3 base = vec3(0.19,0.12,0.09);
+    vec3 dark = vec3(0.1,0.07,0.05);
+    vec3 light = vec3(0.21,0.15,0.12);
+
+    float coarse = 4.*(turbulence(4.0 * pos)); 
+    //float speck = .5+ .25* noise(vec3(50.,50.,.5)*pos+2.*sin(pos));
+
+    float raw = turbulence(vec3(25.0, 25.0, 0.5) * pos + 2.0 * sin(pos));
+    float speckHard = step(0.55, raw);
+    float speck = 0.5 + 0.25 * speckHard;
+
+    vec3 color = mix(base, dark, pow(coarse,0.3));
+    vec3 mixed = mix(color, light, pow(speck,2.));
+    return mixed;
+
+}
+
+vec3 watermelon(vec3 pos) {
+    pos.x += .3*turbulence(1.5*pos);
+    vec3 basecolor = vec3(0., 0.1, 0.);
+    vec3 highlight = vec3(0.2,0.5,0.);
+    vec3 mixedcolor = mix(basecolor,highlight,step(0.,(sin(30. *pos.x))));
+    return mixedcolor;
+}
+
+vec3 neptune(vec3 pos) {
+   vec3 color = vec3(0.,.05,.5) *
+            mix(3., 1.,
+	        .5 + .25 * turbulence(2.*sin(pos))); 
+   color *= .8 + .2 * turbulence(vec3(pos.xy, pow(abs(sin(15. * pos.z)), 1.5)));
+   return color;
+}
+
+vec3 sun(vec3 pos) {
+   vec3 base = vec3(1.,.5,0.);
+   vec3 highlight = vec3(1.,.9,.8);
+   vec3 color = mix(base, highlight, turbulence(vec3( 15.*sin(pos.xy),2.*uTime+15.*sin(pos.z))));
+   return color;
+}
+
+vec3 jupiter(vec3 pos) {
+   vec3 base = vec3(1.,.5,0.);
+   vec3 highlight = vec3(1.,.9,.8);
+   vec3 color = mix(base, highlight, turbulence(vec3(pos.xy, .5*uTime+15.*sin(pos.z))));
+   return color;
+}
+
+void main() {
+   vec3 nor = normalize(vNor);
+   vec3 texture = vec3(0.);
+   float light = (.1 + max(0., dot(vec3(.5),nor)));
+   if (uNum == 1) {
+      texture = watermelon(vObjPos);
+   } else if (uNum ==2) {
+      texture = dirt(vObjPos);
+   } else if (uNum == 3) {
+      texture = neptune(vObjPos);
+   }  else if (uNum == 4) {
+      texture = sun(vObjPos);
+      light = 1.;
+   } else if (uNum == 5) {
+      texture = jupiter(vObjPos);
+   }
+   else {
+      texture = uColor; 
+   }
+   vec3 c = texture * light;
+   fragColor = vec4(c, 1.);
+}`;
+
+autodraw = false;
+
+function Matrix() {
+   let m = [identity()], top = 0;
+   this.push = () => { m[top+1] = m[top].slice(); top++; return this; }
+   this.pop  = () => { if (top > 0) top--; return this; }
+   this.get = () => m[top];
+   this.identity = () => { m[top] = identity(); return this; }
+   this.move = (x,y,z) => { m[top]=mxm(m[top],move(x,y,z)); return this; }
+   this.turnX = a => { m[top] = mxm(m[top], turnX(a)); return this; }
+   this.turnY = a => { m[top] = mxm(m[top], turnY(a)); return this; }
+   this.turnZ = a => { m[top] = mxm(m[top], turnZ(a)); return this; }
+   this.scale = (x,y,z) => {
+      m[top] = mxm(m[top], scale(x,y,z));
+      return this;
+   }
+   this.perspective = (x,y,z) => {
+      m[top] = mxm(m[top], perspective(x,y,z));
+      return this;
+   }
+}
+
+let matrix = new Matrix();
+
+let startTime = Date.now()/1000;
+
+let drawMyMesh = (mesh, color, num) => {
+   setUniform('3fv', 'uColor', color);
+   setUniform('1i', 'uNum', num);
+   let m = mxm(perspective(0,0,-.1), matrix.get());
+   setUniform('Matrix4fv', 'uMF', false, m);
+   setUniform('Matrix4fv', 'uMI', false, inverse(m));
+   drawMesh(mesh);
+}
+let sun = {
+   triangle_strip: true,
+   data: new Float32Array(sphere(25,25))
+};
+let orbit = {
+   triangle_strip: true,
+   data: new Float32Array(torus(40,40,.002))
+}
+
+let rings = {
+   triangle_strip: true,
+   data: new Float32Array(torus(30,6,.08))
+};
+let planet = {
+   triangle_strip: true,
+   data: new Float32Array(sphere(30,10))
+};
+
+this.update = () => {
+   let time = Date.now() / 1000 - startTime;
+   setUniform('1f', 'uTime', time);
+   const angleZ = Math.PI/15 * Math.sin(4*time);
+   matrix.identity().turnX(-20);
+   matrix.push();
+      matrix.scale(.3);
+      drawMyMesh(sun, [1,1,1], 4);
+      matrix.push();
+         matrix.scale(2, 2, 1)
+         drawMyMesh(orbit, [.5,.5,.5], 0);
+         
+      matrix.pop();
+      matrix.push();
+         matrix.turnZ(time).move(2,0,0).scale(.25);
+         drawMyMesh(planet, [0,0,0], 2);
+      matrix.pop();
+         
+      matrix.push();
+         matrix.turnY(-5).scale(3, 3, .1)
+         drawMyMesh(orbit, [.5,.5,.5], 0);
+      matrix.pop();
+      matrix.push();
+         matrix.turnY(-5).turnZ(time).move(3,0,0).scale(.25);
+         drawMyMesh(planet, [0,0,0], 3);
+         matrix.push();
+            matrix.turnZ(time).move(1.5,0,0).scale(.25)
+            drawMyMesh(planet, [.82,.71,.55],0);
+         matrix.pop();
+      matrix.pop();
+      matrix.push();
+         matrix.turnY(-1.5).scale(3.5, 3.5, .1)
+         drawMyMesh(orbit, [.5,.5,.5], 0);
+      matrix.pop();
+      matrix.push();
+         matrix.turnY(-1.5).turnZ(time).move(3.5,0,0).scale(.4);
+         drawMyMesh(planet, [0,0,0], 5);
+         matrix.push();
+            
+            matrix.turnX(angleZ/2).turnY(Math.PI/2+angleZ/2).turnZ(time).scale(1.5, 1.5, .1);
+            drawMyMesh(rings, [.82,.71,.55],0);
+         matrix.pop();
+      matrix.pop();
+   matrix.pop();
+}
+
+}
+gl_start(canvas, new Scene());
+</script>
+
+

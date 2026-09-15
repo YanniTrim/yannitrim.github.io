@@ -238,7 +238,25 @@ console.log("Home component rendered");
                   <small>Major</small>
                   Projects
               </h2>
+              
               <div className="bento-grid">
+                <div className="bento-item">
+                    <h3>Mario 64 Title Screen Redux</h3>
+                    <h4>November 2025 - December 2025</h4>
+                    <p className="languages">WebGL, JavaScript</p>
+                    <p className="desc">
+                        Built an interactive 3D Mario face similar to the that of the Mario 64 title screen using custom WebGL rendering and implicit surface modeling from primitive shapes.
+                        Integrated the marching tetrahedra algorithm to generate a 3D mesh with per-vertex blend weights for local transformations.
+                        Implemented real-time user interaction, enabling dynamic facial morphing via direct manipulation of distinct facial features by having the user's mouse shoot a ray in the space of each facial feature and checking for a match.
+                        Additionally, each facial feature acts as a unique spring allowing for multiple transformations to be applied simulatenously and for them to return to their original position when the user presses the "E" key.
+                    </p>
+                    <div className="project-buttons">
+                         <a href="https://github.com/YanniTrim/WorkoutTracker/tree/main">
+                              <img src="assets/github.png" alt="GitHub" width="48"/>
+                          </a>
+                        <a href="/graphics/mario/index.html" target="_blank" rel="noopener noreferrer" className="button blue">View Demo</a>
+                    </div> 
+                </div>
                 <div className="bento-item">
                     <h3>RPG Workout Tracker</h3>
                     <h4>October 2024 - December 2024</h4>
@@ -266,6 +284,19 @@ console.log("Home component rendered");
                           </a>
                       </div> 
                   </div>
+                  
+                  <div className="bento-item">
+                      <h3 className="smaller">Convolutional Quantum Monte Carlo</h3>
+                      <h4>April 2024</h4>
+                      <p className="languages">Python - Qiskit</p>
+                      <p className="desc">A submission for the Yale Quantum Hackathon for The Hartford / Capgemini / Quantinuum challenge. 
+                          We were given a basic Quantum Monte Carlo circuit to optimize. We developed two solutions, the first being pruning / quantum knitting and the second solution we designed using convolutions, which scaled the qubits by quantum adders instead of a large PDF encoding circuit.</p>
+                      <div className="project-buttons">
+                          <a href="https://github.com/VSandwar74/streamlit">
+                              <img src="assets/github.png" alt="GitHub" width="48"/>
+                          </a>
+                      </div>
+                  </div>
                   <div className="bento-item">
                       <h3>Matrix Calculator</h3>
                       <h4>November 2023</h4>
@@ -276,18 +307,6 @@ console.log("Home component rendered");
                       </p>
                       <div className="project-buttons">
                           <a href="https://github.com/YanniTrim/MatrixCalculator">
-                              <img src="assets/github.png" alt="GitHub" width="48"/>
-                          </a>
-                      </div>
-                  </div>
-                  <div className="bento-item">
-                      <h3 className="smaller">Convolutional Quantum Monte Carlo</h3>
-                      <h4>April 2024</h4>
-                      <p className="languages">Python - Qiskit</p>
-                      <p className="desc">A submission for the Yale Quantum Hackathon for The Hartford / Capgemini / Quantinuum challenge. 
-                          We were given a basic Quantum Monte Carlo circuit to optimize. We developed two solutions, the first being pruning / quantum knitting and the second solution we designed using convolutions, which scaled the qubits by quantum adders instead of a large PDF encoding circuit.</p>
-                      <div className="project-buttons">
-                          <a href="https://github.com/VSandwar74/streamlit">
                               <img src="assets/github.png" alt="GitHub" width="48"/>
                           </a>
                       </div>
